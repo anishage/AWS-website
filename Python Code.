@@ -1,0 +1,28 @@
+import boto3
+import json
+def lambda_handler(event, context):
+    dynamodb = boto3.client('dynamodb')
+    response = dynamodb.update_item(
+    TableName='countercv', 
+    Key={
+        'url':{'S': "anishage.com"}
+    },
+    UpdateExpression='ADD visits :inc',
+    ExpressionAttributeValues={
+        ':inc': {'N': '1'}
+    },
+    ReturnValues="UPDATED_NEW"
+    )
+
+    response = {
+    'statusCode': 200,
+    'headers': {
+        "Content-Type" : "application/json",
+        "Access-Control-Allow-Origin" : "*",
+        "Allow" : "GET, OPTIONS, POST",
+        "Access-Control-Allow-Methods" : "GET, OPTIONS, POST",
+        "Access-Control-Allow-Headers" : "*"
+    },
+    'body': json.dumps(int(response["Attributes"]["visits"]["N"]))
+}
+    return response
